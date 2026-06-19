@@ -13,7 +13,7 @@ import { useAuth } from "../context/context";
 
 import axios from "axios";
 import toast from "react-hot-toast";
-axios.defaults.baseURL = "http://localhost:8080/api";
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL + "/api";
 axios.defaults.withCredentials = true; // Enable sending credentials (e.g., cookies) in cross-origin requests
 
 const Signup = () => {
