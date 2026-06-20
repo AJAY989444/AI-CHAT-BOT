@@ -41,13 +41,13 @@ export const userSignUp = async (
 
 		// create token and store cookie
 
-		res.clearCookie(COOKIE_NAME),
-			{
-				path: "/", //cookie directory in browser
-				domain: process.env.DOMAIN, // our website domain
-				httpOnly: true,
-				signed: true,
-			};
+		res.clearCookie(COOKIE_NAME, {
+    path: "/",
+    httpOnly: true,
+    signed: true,
+    secure: true,
+    sameSite: "none",
+});
 
 		// create token
 		const token = createToken(user._id.toString(), user.email, "7d");
@@ -56,12 +56,13 @@ export const userSignUp = async (
 		expires.setDate(expires.getDate() + 7);
 
 		res.cookie(COOKIE_NAME, token, {
-			path: "/", //cookie directory in browser
-			domain: process.env.DOMAIN, // our website domain
-			expires, // same as token expiration time
-			httpOnly: true,
-			signed: true,
-		});
+    path: "/",
+    expires,
+    httpOnly: true,
+    signed: true,
+    secure: true,
+    sameSite: "none",
+});
 
 		return res
 			.status(201)
@@ -95,13 +96,13 @@ export const userLogin = async (
 				.json({ message: "ERROR", cause: "Incorrect Password" });
 
 		// if user will login again we have to -> set new cookies -> erase previous cookies
-		res.clearCookie(COOKIE_NAME),
-			{
-				path: "/", //cookie directory in browser
-				domain: process.env.DOMAIN, // our website domain
-				httpOnly: true,
-				signed: true,
-			};
+		res.clearCookie(COOKIE_NAME, {
+    path: "/",
+    httpOnly: true,
+    signed: true,
+    secure: true,
+    sameSite: "none",
+});
 
 		// create token
 		const token = createToken(user._id.toString(), user.email, "7d");
@@ -110,12 +111,13 @@ export const userLogin = async (
 		expires.setDate(expires.getDate() + 7);
 
 		res.cookie(COOKIE_NAME, token, {
-			path: "/", //cookie directory in browser
-			domain: process.env.DOMAIN, // our website domain
-			expires, // same as token expiration time
-			httpOnly: true,
-			signed: true,
-		});
+    path: "/",
+    expires,
+    httpOnly: true,
+    signed: true,
+    secure: true,
+    sameSite: "none",
+});
 
 		return res
 			.status(200)
@@ -177,13 +179,13 @@ export const logoutUser = async (
 				.json({ message: "ERROR", cause: "Permissions didn't match" });
 		}
 
-        res.clearCookie(COOKIE_NAME),
-        {
-            path: "/", //cookie directory in browser
-            domain: process.env.DOMAIN, // our website domain
-            httpOnly: true,
-            signed: true,
-        };
+        res.clearCookie(COOKIE_NAME, {
+    path: "/",
+    httpOnly: true,
+    signed: true,
+    secure: true,
+    sameSite: "none",
+});
 
 		return res
 			.status(200)
