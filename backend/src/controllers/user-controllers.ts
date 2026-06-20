@@ -3,7 +3,6 @@ import { hash, compare } from "bcrypt";
 
 import User from "../models/user-model.js";
 import { createToken } from "../utils/token-manager.js";
-import { COOKIE_NAME } from "../utils/constants.js";
 
 export const getAllUsers = async (
 	req: Request,
@@ -35,38 +34,14 @@ export const userSignUp = async (
 			});
 
 		const hashedPassword = await hash(password, 10);
-
 		const user = new User({ name, email, password: hashedPassword });
 		await user.save();
 
-		// create token and store cookie
-
-		res.clearCookie(COOKIE_NAME, {
-    path: "/",
-    httpOnly: true,
-    signed: true,
-    secure: true,
-    sameSite: "none",
-});
-
-		// create token
 		const token = createToken(user._id.toString(), user.email, "7d");
-
-		const expires = new Date();
-		expires.setDate(expires.getDate() + 7);
-
-		res.cookie(COOKIE_NAME, token, {
-    path: "/",
-    expires,
-    httpOnly: true,
-    signed: true,
-    secure: true,
-    sameSite: "none",
-});
 
 		return res
 			.status(201)
-			.json({ message: "OK", name: user.name, email: user.email });
+			.json({ message: "OK", name: user.name, email: user.email, token });
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({ message: "ERROR", cause: error.message });
@@ -95,33 +70,11 @@ export const userLogin = async (
 				.status(403)
 				.json({ message: "ERROR", cause: "Incorrect Password" });
 
-		// if user will login again we have to -> set new cookies -> erase previous cookies
-		res.clearCookie(COOKIE_NAME, {
-    path: "/",
-    httpOnly: true,
-    signed: true,
-    secure: true,
-    sameSite: "none",
-});
-
-		// create token
 		const token = createToken(user._id.toString(), user.email, "7d");
-
-		const expires = new Date();
-		expires.setDate(expires.getDate() + 7);
-
-		res.cookie(COOKIE_NAME, token, {
-    path: "/",
-    expires,
-    httpOnly: true,
-    signed: true,
-    secure: true,
-    sameSite: "none",
-});
 
 		return res
 			.status(200)
-			.json({ message: "OK", name: user.name, email: user.email });
+			.json({ message: "OK", name: user.name, email: user.email, token });
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({ message: "ERROR", cause: error.message });
@@ -134,7 +87,7 @@ export const verifyUserStatus = async (
 	next: NextFunction
 ) => {
 	try {
-		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
+		const user = await User.findById(res.locals.jwtData.id);
 
 		if (!user)
 			return res.status(401).json({
@@ -154,8 +107,8 @@ export const verifyUserStatus = async (
 	} catch (err) {
 		console.log(err);
 		return res
-			.status(200)
-			.json({ message: "ERROR", cause: err.message});
+			.status(500)
+			.json({ message: "ERROR", cause: err.message });
 	}
 };
 
@@ -165,7 +118,7 @@ export const logoutUser = async (
 	next: NextFunction
 ) => {
 	try {
-		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
+		const user = await User.findById(res.locals.jwtData.id);
 
 		if (!user)
 			return res.status(401).json({
@@ -179,21 +132,13 @@ export const logoutUser = async (
 				.json({ message: "ERROR", cause: "Permissions didn't match" });
 		}
 
-        res.clearCookie(COOKIE_NAME, {
-    path: "/",
-    httpOnly: true,
-    signed: true,
-    secure: true,
-    sameSite: "none",
-});
-
 		return res
 			.status(200)
 			.json({ message: "OK", name: user.name, email: user.email });
 	} catch (err) {
 		console.log(err);
 		return res
-			.status(200)
-			.json({ message: "ERROR", cause: err.message});
+			.status(500)
+			.json({ message: "ERROR", cause: err.message });
 	}
 };
