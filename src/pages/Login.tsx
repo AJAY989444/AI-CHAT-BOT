@@ -11,10 +11,6 @@ import Button from "../components/shared/Button";
 
 import styles from "./AuthForm.module.css";
 
-import axios from "axios";
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL + "/api";
-axios.defaults.withCredentials = true; // Enable sending credentials (e.g., cookies) in cross-origin requests
-
 import { useAuth } from "../context/context";
 
 const Login = () => {

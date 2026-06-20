@@ -11,10 +11,7 @@ import Button from "../components/shared/Button";
 
 import { useAuth } from "../context/context";
 
-import axios from "axios";
 import toast from "react-hot-toast";
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL + "/api";
-axios.defaults.withCredentials = true; // Enable sending credentials (e.g., cookies) in cross-origin requests
 
 const Signup = () => {
 	const [buttonName, setButtonName] = useState("SignUp");
@@ -30,7 +27,6 @@ const Signup = () => {
 		const username = formData.get("username") as string;
         const email = formData.get("email") as string;
 		const password = formData.get("password") as string;
-		// const confirmPassword = formData.get("confirm-password") as string;
 
 		try {
 			setButtonName("Loading ...");
